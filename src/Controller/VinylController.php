@@ -8,8 +8,8 @@ use Symfony\Component\Routing\Annotation\Route;
 use function Symfony\Component\String\u;
 
 class VinylController extends AbstractController {
-    #[Route('/')]
-    public function homepage(): Response {
+    #[Route('/', name: 'app_homepage')]
+    public function homepage(Environment $twig): Response {
         $tracks = [
             ['song' => 'Kiss from a Rose', 'artist' => 'Seal'],
             ['song' => 'Creep', 'artist' => 'Radiohead'],
@@ -21,14 +21,14 @@ class VinylController extends AbstractController {
         ]);
     }
 
-    #[Route('/browse/{slug}')]
+    #[Route('/browse/{slug}', name: 'app_browse')]
     public function browse(string $slug = null): Response {
-        if ($slug) {
-            $title = 'Genre: ' . u(str_replace('-',' ', $slug))->title(true);
-        } else {
-            $title = 'Genre: All genres';
-        }
-        return new Response($title);
+
+        $genre = $slug ? u(str_replace('-',' ', $slug))->title(true) : null;
+
+        return $this->render('vinyl/browse.html.twig', [
+            'genre' => $genre
+        ]);
     }
 
 }
